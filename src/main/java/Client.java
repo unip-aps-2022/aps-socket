@@ -1,23 +1,27 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.Objects;
 import java.util.Scanner;
 
 
 public class Client {
     public static void main(String[] args) {
-        new Client().sendMessage("localhost", 12345);
+//        new Client().sendMessage("localhost", 12345);
+//        new Client().receiveFileFromServer("localhost", 9543);
+        new Client().sendFileToServer("localhost", 9543, "C:\\temp\\tttttttttttttt.csv");
     }
 
     private void sendMessage(String serverAddress, int port) {
         boolean liga = true;
         try {
+            System.out.println("Abrindo");
             Socket socket = new Socket(serverAddress, port);
-            ObjectInputStream entrada = new ObjectInputStream(socket.getInputStream());
             ObjectOutputStream saida = new ObjectOutputStream(socket.getOutputStream());
+            System.out.println("Abrido");
+            ObjectInputStream entrada = new ObjectInputStream(socket.getInputStream());
             System.out.println("Server: " + entrada.readObject());
             while (liga) {
                 Scanner sc = new Scanner(System.in);
+                System.out.println("ligado com santa catarina");
                 System.out.print("Digite a mensagem('sair' para fechar conexão): ");
                 String message = sc.nextLine();
                 saida.flush();
@@ -44,16 +48,32 @@ public class Client {
         }
     }
 
-    private void receiveFileFromFileServer(String serverAddress, int port) {
+    private void receiveFileFromServer(String serverAddress, int port) {
         try {
-            byte[] bytes = new byte[1024];
             Socket socket = new Socket(serverAddress, port);
+            OutputStream os = socket.getOutputStream();
             System.out.println("Conectado no servidor: " + socket.getInetAddress().getHostAddress());
             InputStream is = socket.getInputStream();
+            byte[] bytes = new byte[1024];
             FileOutputStream fos = new FileOutputStream("C:\\temp\\tttttttttttttt.csv");
             is.read(bytes, 0, bytes.length);
             fos.write(bytes, 0, bytes.length);
             System.out.println("Arquivo recebido.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendFileToServer(String serverAddress, int port, String filePath) {
+        try {
+            Socket socket = new Socket(serverAddress, port);
+            System.out.println("Conectado no servidor: " + socket.getInetAddress().getHostAddress());
+            FileInputStream fis = new FileInputStream(filePath);
+            byte[] bytes = new byte[1024];
+            OutputStream os = socket.getOutputStream();
+            fis.read(bytes, 0, bytes.length);
+            os.write(bytes, 0, bytes.length);
+            System.out.println("Arquivo enviado!");
         } catch (IOException e) {
             e.printStackTrace();
         }
