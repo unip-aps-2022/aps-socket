@@ -7,7 +7,20 @@ public class Server {
     public static void main(String[] args) {
 //        new Server().sendFile(9543, "D:\\temp\\testSV.csv");
 //        new Server().startServer(12345);
-        new Server().receiveFileFromClient(9543);
+//        new Server().receiveFileFromClient(9543);
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Bem vindo(a)! O que deseja fazer?");
+        System.out.println("1: Trocar mensagens");
+        System.out.println("2: Trocar arquivos");
+        System.out.print("Digite um número: ");
+        int num = sc.nextInt();
+        switch (num) {
+            case 1:
+                System.out.println("Servidor iniciando, esperando conexão...");
+                new Server().startServer(12345);
+            case 2:
+                new Server().sendFileToClient(9543, "D:\\temp\\conteudo.txt");
+        }
     }
 
     private void startServer(int port) {
@@ -16,7 +29,6 @@ public class Server {
             ServerSocket server = new ServerSocket(port);
             Socket socket = server.accept();
             ObjectOutputStream saida = new ObjectOutputStream(socket.getOutputStream());
-            saida.reset();
             ObjectInputStream entrada = new ObjectInputStream(socket.getInputStream());
             saida.flush();
             saida.writeObject("Conectado no servidor");
@@ -29,7 +41,8 @@ public class Server {
                     saida.close();
                     socket.close();
                     server.close();
-                    break;
+                    System.out.println("Conexão fechada!");
+                    System.exit(0);
                 }
                 Scanner sc = new Scanner(System.in);
                 System.out.print("Digite a mensagem('sair' para fechar conexão): ");
@@ -41,8 +54,10 @@ public class Server {
                     saida.close();
                     socket.close();
                     server.close();
-                    liga = false;
+                    System.out.println("Conexão fechada!");
+                    System.exit(0);
                 }
+
             }
 
         } catch (IOException | ClassNotFoundException e) {
@@ -67,7 +82,7 @@ public class Server {
         }
     }
 
-    private void receiveFileFromClient(int port){
+    private void receiveFileFromClient(int port) {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
             Socket socket = serverSocket.accept();

@@ -5,23 +5,31 @@ import java.util.Scanner;
 
 public class Client {
     public static void main(String[] args) {
-//        new Client().sendMessage("localhost", 12345);
+        System.out.println("Bem vindo(a)! O que deseja fazer?");
+        System.out.println("1: Trocar mensagens");
+        System.out.println("2: Trocar arquivos");
+        System.out.print("Digite um número: ");
+        int num = new Scanner(System.in).nextInt();
+        switch (num){
+            case 1:
+                new Client().sendMessage("localhost", 12345);
+            case 2:
+//                System.out.println("Gostaria de receber ou enviar um arquivo?");
+        }
+        new Client().sendMessage("localhost", 12345);
 //        new Client().receiveFileFromServer("localhost", 9543);
-        new Client().sendFileToServer("localhost", 9543, "C:\\temp\\tttttttttttttt.csv");
+//        new Client().sendFileToServer("localhost", 9543, "C:\\temp\\tttttttttttttt.csv");
     }
 
     private void sendMessage(String serverAddress, int port) {
         boolean liga = true;
         try {
-            System.out.println("Abrindo");
             Socket socket = new Socket(serverAddress, port);
             ObjectOutputStream saida = new ObjectOutputStream(socket.getOutputStream());
-            System.out.println("Abrido");
             ObjectInputStream entrada = new ObjectInputStream(socket.getInputStream());
             System.out.println("Server: " + entrada.readObject());
             while (liga) {
                 Scanner sc = new Scanner(System.in);
-                System.out.println("ligado com santa catarina");
                 System.out.print("Digite a mensagem('sair' para fechar conexão): ");
                 String message = sc.nextLine();
                 saida.flush();
@@ -34,7 +42,7 @@ public class Client {
                     liga = false;
                 }
                 String serverMessage = (String) entrada.readObject();
-                System.out.println("Message: " + serverMessage);
+                System.out.println("Mensagem: " + serverMessage);
                 if ("sair".equals(serverMessage)) {
                     System.out.println("Conexão fechada!");
                     saida.close();
