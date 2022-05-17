@@ -3,6 +3,7 @@ package teste;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Server {
     private Socket clientSocket;
@@ -32,7 +33,7 @@ public class Server {
 
     public void receiveFile() throws IOException {
         FileInputStream fis = new FileInputStream(in.readLine());
-        FileOutputStream fos = new FileOutputStream("C:\\temp\\tttttttttttttt.csv");
+        FileOutputStream fos = new FileOutputStream("C:\\temp\\testSV.csv");
         byte[] bytes = new byte[1024];
         fis.read(bytes, 0, bytes.length);
         fos.write(bytes, 0, bytes.length);
@@ -57,11 +58,39 @@ public class Server {
 
     public static void main(String[] args) {
         try {
-            Server sv = new Server();
-            sv.start(12345);
 //            sv.sendFile("D:\\temp\\TESTEEEEE.pdf");
-            sv.receiveFile();
-//            System.out.println(sv.sendMessage("AI"));
+            Server sv = new Server();
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Bem vindo(a)! O que deseja fazer?");
+            System.out.println("1: Trocar mensagens.");
+            System.out.println("2: Trocar arquivos.");
+            System.out.print("Digite um número: ");
+            int option = sc.nextInt();
+            switch (option) {
+                case 1:
+                    System.out.println("Servidor iniciando, esperando o cliente se conectar...");
+                    sv.start(12345);
+                    break;
+                case 2:
+                    System.out.println("Gostaria de enviar ou receber arquivos?");
+                    System.out.println("1: Enviar.");
+                    System.out.println("2: Receber.");
+                    System.out.println("Digite um número para escolher: ");
+                    int fileOption = sc.nextInt();
+                    switch (fileOption){
+                        case 1:
+                            System.out.println("Cole o caminho do arquivo: ");
+                            String path = sc.next();
+                            System.out.println("Servidor iniciando, esperando o cliente se conectar...");
+                            sv.start(12345);
+                            sv.sendFile(path);
+                        case 2:
+                            System.out.println("Servidor iniciando, esperando o cliente se conectar...");
+                            sv.start(12345);
+                            sv.receiveFile();
+                    }
+                    break;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
