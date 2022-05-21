@@ -19,9 +19,13 @@ public class Client {
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
-    public String sendMessage(String msg) throws IOException {
+    public void sendMessage(String msg) throws IOException {
         out.println(msg);
-        return in.readLine();
+//        return in.readLine();
+    }
+
+    public void readMessage() throws IOException {
+        System.out.printf("Mensagem do servidor: %s", in.readLine());
     }
 
     public void stopConnection() throws IOException {
@@ -54,7 +58,9 @@ public class Client {
             case 1 -> {
                 System.out.println("Conectando...");
                 c.startConnection("localhost", 12345);
-                System.out.println(c.sendMessage(sc.next()));
+                c.readMessage();
+                System.out.println("\nDigite uma mensagem: ");
+                c.sendMessage(sc.next());
             }
             case 2 -> {
                 System.out.println("Gostaria de enviar ou receber arquivos?");

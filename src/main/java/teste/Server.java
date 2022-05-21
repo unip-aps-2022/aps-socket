@@ -24,9 +24,13 @@ public class Server {
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
     }
 
-    public String sendMessage(String msg) throws IOException {
+    public void sendMessage(String msg) throws IOException {
         out.println(msg);
-        return in.readLine();
+//        return in.readLine();
+    }
+
+    public void readMessage() throws IOException {
+        System.out.printf("Mensagem do cliente: %s", in.readLine());
     }
 
     public void receiveFile() throws IOException {
@@ -63,7 +67,8 @@ public class Server {
                     System.out.println("Servidor iniciando, esperando o cliente se conectar...");
                     sv.start(12345);
                     System.out.println("Digite uma mensagem: ");
-                    System.out.println(sv.sendMessage(sc.next()));
+                    sv.sendMessage(sc.next());
+                    sv.readMessage();
                 }
                 case 2 -> {
                     System.out.println("Gostaria de enviar ou receber arquivos?");
