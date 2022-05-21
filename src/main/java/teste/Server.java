@@ -1,8 +1,13 @@
 package teste;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Base64;
 import java.util.Scanner;
 
 public class Server {
@@ -17,36 +22,23 @@ public class Server {
         System.out.printf("Conectado no client: %s\n", clientSocket.getInetAddress().getHostAddress());
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-//        String greeting = in.readLine();
-//        if ("hello server".equals(greeting)) {
-//            out.println("hello client");
-//        } else {
-//            out.println("unrecognised greeting");
-//        }
     }
 
     public String sendMessage(String msg) throws IOException {
         out.println(msg);
-        String resp = in.readLine();
-        return resp;
+        return in.readLine();
     }
 
     public void receiveFile() throws IOException {
-        FileInputStream fis = new FileInputStream(in.readLine());
-        FileOutputStream fos = new FileOutputStream("C:\\temp\\testSV.csv");
-        byte[] bytes = new byte[1024];
-        fis.read(bytes, 0, bytes.length);
-        fos.write(bytes, 0, bytes.length);
-//        in = new BufferedReader(new FileReader(in.readLine()));
-//        String strCurrentLine;
-//        while ((strCurrentLine = in.readLine()) != null) {
-//            System.out.println(strCurrentLine);
-//        }
+        byte[] decode = Base64.getDecoder().decode(in.readLine());
+        FileUtils.writeByteArrayToFile(new File("C:\\temp\\CC5_4P_PAULISTA.pdf"), decode);
     }
 
-    public void sendFile(String path) {
-        File file = new File(path);
-        out.println(file);
+    //        D:\temp\CC5_4P_PAULISTA.pdf
+    public void sendFile(String path) throws IOException {
+        String base64 = Base64.getEncoder().encodeToString(Files.readAllBytes(Path.of(path)));
+        out.println(base64);
+        System.out.println("Mandei");
     }
 
     public void stop() throws IOException {
@@ -67,29 +59,33 @@ public class Server {
             System.out.print("Digite um número: ");
             int option = sc.nextInt();
             switch (option) {
-                case 1:
+                case 1 -> {
                     System.out.println("Servidor iniciando, esperando o cliente se conectar...");
                     sv.start(12345);
-                    break;
-                case 2:
+                    System.out.println("Digite uma mensagem: ");
+                    System.out.println(sv.sendMessage(sc.next()));
+                }
+                case 2 -> {
                     System.out.println("Gostaria de enviar ou receber arquivos?");
                     System.out.println("1: Enviar.");
                     System.out.println("2: Receber.");
                     System.out.println("Digite um número para escolher: ");
                     int fileOption = sc.nextInt();
-                    switch (fileOption){
-                        case 1:
+                    switch (fileOption) {
+                        case 1 -> {
                             System.out.println("Cole o caminho do arquivo: ");
                             String path = sc.next();
                             System.out.println("Servidor iniciando, esperando o cliente se conectar...");
                             sv.start(12345);
                             sv.sendFile(path);
-                        case 2:
+                        }
+                        case 2 -> {
                             System.out.println("Servidor iniciando, esperando o cliente se conectar...");
                             sv.start(12345);
                             sv.receiveFile();
+                        }
                     }
-                    break;
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

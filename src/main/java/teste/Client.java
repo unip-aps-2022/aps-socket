@@ -2,7 +2,11 @@ package teste;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Base64;
 import java.util.Scanner;
+import org.apache.commons.io.FileUtils;
 
 public class Client {
     private Socket socket;
@@ -17,8 +21,7 @@ public class Client {
 
     public String sendMessage(String msg) throws IOException {
         out.println(msg);
-        String resp = in.readLine();
-        return resp;
+        return in.readLine();
     }
 
     public void stopConnection() throws IOException {
@@ -27,31 +30,20 @@ public class Client {
         socket.close();
     }
 
-    public void sendFile(String path) throws FileNotFoundException {
-        File file = new File(path);
-        OutputStream os = new FileOutputStream(file);
-        out.println(file);
+    public void sendFile(String path) throws IOException {
+        String base64 = Base64.getEncoder().encodeToString(Files.readAllBytes(Path.of(path)));
+        out.println(base64);
+        System.out.println("Mandei");
     }
 
+
     public void receiveFile() throws IOException {
-        FileInputStream fis = new FileInputStream(in.readLine());
-        FileOutputStream fos = new FileOutputStream("C:\\temp\\TESTEEEEE.pdf");
-        byte[] bytes = new byte[1024];
-        fis.read(bytes, 0, bytes.length);
-        fos.write(bytes, 0, bytes.length);
-//        in = new BufferedReader(new FileReader(in.readLine()));
-//        String strCurrentLine;
-//        while ((strCurrentLine = in.readLine()) != null) {
-//            System.out.println(strCurrentLine);
-//        }
+        byte[] decode = Base64.getDecoder().decode(in.readLine());
+        FileUtils.writeByteArrayToFile(new File("C:\\temp\\CC5_4P_PAULISTA.pdf"), decode);
     }
 
     public static void main(String[] args) throws IOException {
         Client c = new Client();
-//        c.startConnection("localhost", 12345);
-//        c.sendFile("D:\\temp\\TESTEEEEE.pdf");
-//        System.out.println(c.sendMessage("OII"));
-//        System.out.println(c.sendMessage("hello server"));
         Scanner sc = new Scanner(System.in);
         System.out.println("Bem vindo(a)! O que deseja fazer?");
         System.out.println("1: Trocar mensagens.");
@@ -59,30 +51,33 @@ public class Client {
         System.out.print("Digite um número: ");
         int option = sc.nextInt();
         switch (option) {
-            case 1:
-                System.out.println("Servidor iniciando, esperando conexão...");
+            case 1 -> {
+                System.out.println("Conectando...");
                 c.startConnection("localhost", 12345);
-                break;
-            case 2:
+                System.out.println(c.sendMessage(sc.next()));
+            }
+            case 2 -> {
                 System.out.println("Gostaria de enviar ou receber arquivos?");
                 System.out.println("1: Enviar.");
                 System.out.println("2: Receber.");
                 System.out.println("Digite um número para escolher: ");
                 int fileOption = sc.nextInt();
                 switch (fileOption) {
-                    case 1:
+                    case 1 -> {
                         System.out.println("Cole o caminho do arquivo: ");
                         String path = sc.next();
-                        System.out.println("Servidor iniciando!");
+                        System.out.println("Conectando...");
                         System.out.println("Esperando cliente se conectar...");
                         c.startConnection("localhost", 12345);
                         c.sendFile(path);
-                    case 2:
-                        System.out.println("Servidor iniciando!");
-                        System.out.println("Esperando o cliente se conectar...");
+                    }
+                    case 2 -> {
+                        System.out.println("Conectando...");
                         c.startConnection("localhost", 12345);
                         c.receiveFile();
+                    }
                 }
+            }
         }
     }
 }
