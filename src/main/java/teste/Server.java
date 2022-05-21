@@ -5,6 +5,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
@@ -52,23 +53,41 @@ public class Server {
         server.close();
     }
 
+//    public int readInt(Scanner scanner){
+//        ^\d$
+//        try {
+//            int option = Integer.parseInt(scanner.nextLine());
+//            while()
+//        }catch (NumberFormatException e){
+//
+//        }
+//    }
+
     public static void main(String[] args) {
         try {
 //            sv.sendFile("D:\\temp\\TESTEEEEE.pdf");
             Server sv = new Server();
+            sv.start(12345);
             Scanner sc = new Scanner(System.in);
             System.out.println("Bem vindo(a)! O que deseja fazer?");
             System.out.println("1: Trocar mensagens.");
             System.out.println("2: Trocar arquivos.");
             System.out.print("Digite um número: ");
-            int option = sc.nextInt();
+            int option = Integer.parseInt(sc.nextLine());
             switch (option) {
                 case 1 -> {
                     System.out.println("Servidor iniciando, esperando o cliente se conectar...");
-                    sv.start(12345);
-                    System.out.println("Digite uma mensagem: ");
-                    sv.sendMessage(sc.next());
-                    sv.readMessage();
+                    boolean stop = false;
+                    while (!stop){
+                        System.out.println("\nDigite uma mensagem(ou 'sair' para encerrar): ");
+                        String msg = sc.nextLine();
+                        sv.sendMessage(msg);
+                        sv.readMessage();
+                        if("sair".equals(msg)){
+                            sv.stop();
+                            stop = true;
+                        }
+                    }
                 }
                 case 2 -> {
                     System.out.println("Gostaria de enviar ou receber arquivos?");

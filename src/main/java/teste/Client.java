@@ -48,19 +48,27 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
         Client c = new Client();
+        c.startConnection("localhost", 12345);
         Scanner sc = new Scanner(System.in);
         System.out.println("Bem vindo(a)! O que deseja fazer?");
         System.out.println("1: Trocar mensagens.");
         System.out.println("2: Trocar arquivos.");
         System.out.print("Digite um número: ");
-        int option = sc.nextInt();
+        int option = Integer.parseInt(sc.nextLine());
         switch (option) {
             case 1 -> {
                 System.out.println("Conectando...");
-                c.startConnection("localhost", 12345);
-                c.readMessage();
-                System.out.println("\nDigite uma mensagem: ");
-                c.sendMessage(sc.next());
+                boolean stop = false;
+                while (!stop){
+                    c.readMessage();
+                    System.out.println("\nDigite uma mensagem(ou 'sair' para encerrar: ");
+                    String msg = sc.nextLine();
+                    c.sendMessage(msg);
+                    if("sair".equals(msg)){
+                        c.stopConnection();
+                        stop = true;
+                    }
+                }
             }
             case 2 -> {
                 System.out.println("Gostaria de enviar ou receber arquivos?");
@@ -74,12 +82,10 @@ public class Client {
                         String path = sc.next();
                         System.out.println("Conectando...");
                         System.out.println("Esperando cliente se conectar...");
-                        c.startConnection("localhost", 12345);
                         c.sendFile(path);
                     }
                     case 2 -> {
                         System.out.println("Conectando...");
-                        c.startConnection("localhost", 12345);
                         c.receiveFile();
                     }
                 }
