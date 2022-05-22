@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Scanner;
+
 import org.apache.commons.io.FileUtils;
 
 public class Client {
@@ -25,7 +26,10 @@ public class Client {
     }
 
     public void readMessage() throws IOException {
-        System.out.printf("Mensagem do servidor: %s", in.readLine());
+        String resp = in.readLine();
+        if (resp != null) {
+            System.out.printf("Mensagem do servidor: %s", resp);
+        }
     }
 
     public void stopConnection() throws IOException {
@@ -40,6 +44,20 @@ public class Client {
         System.out.println("Mandei");
     }
 
+    public int readInt(Scanner scanner) {
+        int option = -1;
+        while (option <= 0 || option > 2) {
+            try {
+                System.out.print("Escolha uma opção: ");
+                option = Integer.parseInt(scanner.nextLine());
+
+            } catch (NumberFormatException ignored) {
+
+            }
+        }
+        return option;
+    }
+
 
     public void receiveFile() throws IOException {
         byte[] decode = Base64.getDecoder().decode(in.readLine());
@@ -47,46 +65,53 @@ public class Client {
     }
 
     public static void main(String[] args) throws IOException {
+        System.out.println("""
+                Inicializando a central de comunicação da Secretaria de Estado do Meio Ambiente...
+                Este dispositivo Client tem como finalidade realizar uma conexão direta com o servidor da Secretaria de Estado do Meio Ambiente para
+                realizar a troca de informações das equipes de inspeções enviadas para o Rio Tietê com a equipe interna da Secretaria. Por meio deste,
+                é possível trocar mensagens de texto ou arquivos com o servidor.
+                Atenção: Apenas realize a comunicação quando necessário, pois
+                apenas uma equipe pode realizar a comunicação por vez, fazendo com que a outra equipe que precise se comunicar tenha que aguardar.
+                                """);
         Client c = new Client();
-        c.startConnection("localhost", 12345);
+        boolean stop = false;
         Scanner sc = new Scanner(System.in);
-        System.out.println("Bem vindo(a)! O que deseja fazer?");
-        System.out.println("1: Trocar mensagens.");
-        System.out.println("2: Trocar arquivos.");
-        System.out.print("Digite um número: ");
-        int option = Integer.parseInt(sc.nextLine());
-        switch (option) {
-            case 1 -> {
-                System.out.println("Conectando...");
-                boolean stop = false;
-                while (!stop){
+        c.startConnection("localhost", 12345);
+        System.out.println("O que deseja fazer: (Apenas um tipo de informação pode ser trocada por conexão)");
+        System.out.println("Trocar mensagens: 1");
+        System.out.println("Trocar arquivo: 2");
+        int option = c.readInt(sc);
+        while (!stop) {
+            switch (option) {
+                case 1 -> {
+                    System.out.println("Conectado...");
                     c.readMessage();
                     System.out.println("\nDigite uma mensagem(ou 'sair' para encerrar: ");
                     String msg = sc.nextLine();
-                    c.sendMessage(msg);
-                    if("sair".equals(msg)){
+                    if ("sair".equals(msg)) {
                         c.stopConnection();
                         stop = true;
                     }
+                    c.sendMessage(msg);
                 }
-            }
-            case 2 -> {
-                System.out.println("Gostaria de enviar ou receber arquivos?");
-                System.out.println("1: Enviar.");
-                System.out.println("2: Receber.");
-                System.out.println("Digite um número para escolher: ");
-                int fileOption = sc.nextInt();
-                switch (fileOption) {
-                    case 1 -> {
-                        System.out.println("Cole o caminho do arquivo: ");
-                        String path = sc.next();
-                        System.out.println("Conectando...");
-                        System.out.println("Esperando cliente se conectar...");
-                        c.sendFile(path);
-                    }
-                    case 2 -> {
-                        System.out.println("Conectando...");
-                        c.receiveFile();
+                case 2 -> {
+                    System.out.println("Gostaria de enviar ou receber arquivos?");
+                    System.out.println("1: Enviar.");
+                    System.out.println("2: Receber.");
+                    System.out.println("Digite um número para escolher: ");
+                    int fileOption = sc.nextInt();
+                    switch (fileOption) {
+                        case 1 -> {
+                            System.out.println("Cole o caminho do arquivo: ");
+                            String path = sc.next();
+                            System.out.println("Conectado...");
+                            System.out.println("Esperando cliente se conectar...");
+                            c.sendFile(path);
+                        }
+                        case 2 -> {
+                            System.out.println("Conectado...");
+                            c.receiveFile();
+                        }
                     }
                 }
             }

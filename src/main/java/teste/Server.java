@@ -8,8 +8,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Base64;
-import java.util.Scanner;
+import java.util.*;
 
 public class Server {
     private Socket clientSocket;
@@ -53,60 +52,64 @@ public class Server {
         server.close();
     }
 
-//    public int readInt(Scanner scanner){
-//        ^\d$
-//        try {
-//            int option = Integer.parseInt(scanner.nextLine());
-//            while()
-//        }catch (NumberFormatException e){
-//
-//        }
-//    }
+    public int readInt(Scanner scanner) {
+        int option = -1;
+        while (option <= 0 || option > 2) {
+            try {
+                System.out.print("Escolha uma opção: ");
+                option = Integer.parseInt(scanner.nextLine());
+
+            } catch (NumberFormatException ignored) {
+
+            }
+        }
+        return option;
+    }
 
     public static void main(String[] args) {
         try {
-//            sv.sendFile("D:\\temp\\TESTEEEEE.pdf");
+            System.out.println("""
+                    Inicializando a central de comunicação da Secretaria de Estado do Meio Ambiente...
+                    Este servidor tem como finalidade realizar a troca de infomações entre as\s
+                    equipes de inspeções enviadas para o Rio Tietê e a Secretaria.\s
+                    """);
             Server sv = new Server();
             sv.start(12345);
+            boolean stop = false;
             Scanner sc = new Scanner(System.in);
-            System.out.println("Bem vindo(a)! O que deseja fazer?");
-            System.out.println("1: Trocar mensagens.");
-            System.out.println("2: Trocar arquivos.");
-            System.out.print("Digite um número: ");
-            int option = Integer.parseInt(sc.nextLine());
-            switch (option) {
-                case 1 -> {
-                    System.out.println("Servidor iniciando, esperando o cliente se conectar...");
-                    boolean stop = false;
-                    while (!stop){
+            System.out.println("O que deseja fazer: (Apenas um tipo de informação pode ser trocada por conexão)");
+            System.out.println("Enviar mensagens: 1");
+            System.out.println("Enviar arquivo: 2");
+            int option = sv.readInt(sc);
+            while (!stop) {
+                switch (option) {
+                    case 1 -> {
                         System.out.println("\nDigite uma mensagem(ou 'sair' para encerrar): ");
                         String msg = sc.nextLine();
-                        sv.sendMessage(msg);
-                        sv.readMessage();
-                        if("sair".equals(msg)){
+                        if ("sair".equals(msg)) {
                             sv.stop();
                             stop = true;
                         }
+                        sv.sendMessage(msg);
+                        sv.readMessage();
                     }
-                }
-                case 2 -> {
-                    System.out.println("Gostaria de enviar ou receber arquivos?");
-                    System.out.println("1: Enviar.");
-                    System.out.println("2: Receber.");
-                    System.out.println("Digite um número para escolher: ");
-                    int fileOption = sc.nextInt();
-                    switch (fileOption) {
-                        case 1 -> {
-                            System.out.println("Cole o caminho do arquivo: ");
-                            String path = sc.next();
-                            System.out.println("Servidor iniciando, esperando o cliente se conectar...");
-                            sv.start(12345);
-                            sv.sendFile(path);
-                        }
-                        case 2 -> {
-                            System.out.println("Servidor iniciando, esperando o cliente se conectar...");
-                            sv.start(12345);
-                            sv.receiveFile();
+                    case 2 -> {
+                        System.out.println("Gostaria de enviar ou receber arquivos?");
+                        System.out.println("1: Enviar.");
+                        System.out.println("2: Receber.");
+                        System.out.println("Digite um número para escolher: ");
+                        int fileOption = sc.nextInt();
+                        switch (fileOption) {
+                            case 1 -> {
+                                System.out.println("Cole o caminho do arquivo: ");
+                                String path = sc.next();
+                                sv.start(12345);
+                                sv.sendFile(path);
+                            }
+                            case 2 -> {
+                                sv.start(12345);
+                                sv.receiveFile();
+                            }
                         }
                     }
                 }
