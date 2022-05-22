@@ -25,7 +25,6 @@ public class Server {
 
     public void sendMessage(String msg) throws IOException {
         out.println(msg);
-//        return in.readLine();
     }
 
     public void readMessage() throws IOException {
@@ -97,17 +96,17 @@ public class Server {
                         System.out.println("1: Enviar.");
                         System.out.println("2: Receber.");
                         System.out.println("Digite um número para escolher: ");
-                        int fileOption = sc.nextInt();
+                        int fileOption = sv.readInt(sc);
                         switch (fileOption) {
                             case 1 -> {
                                 System.out.println("Cole o caminho do arquivo: ");
                                 String path = sc.next();
-                                sv.start(12345);
                                 sv.sendFile(path);
+                                stop = true;
                             }
                             case 2 -> {
-                                sv.start(12345);
                                 sv.receiveFile();
+                                stop = true;
                             }
                         }
                     }

@@ -98,7 +98,7 @@ public class Client {
                     System.out.println("1: Enviar.");
                     System.out.println("2: Receber.");
                     System.out.println("Digite um número para escolher: ");
-                    int fileOption = sc.nextInt();
+                    int fileOption = c.readInt(sc);
                     switch (fileOption) {
                         case 1 -> {
                             System.out.println("Cole o caminho do arquivo: ");
@@ -106,10 +106,14 @@ public class Client {
                             System.out.println("Conectado...");
                             System.out.println("Esperando cliente se conectar...");
                             c.sendFile(path);
+//                            System.exit(0);
+                            stop = true;
                         }
                         case 2 -> {
                             System.out.println("Conectado...");
                             c.receiveFile();
+//                            System.exit(0);
+                            stop = true;
                         }
                     }
                 }
