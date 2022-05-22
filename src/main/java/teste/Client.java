@@ -22,7 +22,6 @@ public class Client {
 
     public void sendMessage(String msg) throws IOException {
         out.println(msg);
-//        return in.readLine();
     }
 
     public void readMessage() throws IOException {
