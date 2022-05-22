@@ -1,4 +1,4 @@
-package teste;
+package aps;
 
 import java.io.*;
 import java.net.Socket;
