@@ -60,7 +60,7 @@ public class Client {
 
     public void receiveFile() throws IOException {
         byte[] decode = Base64.getDecoder().decode(in.readLine());
-        FileUtils.writeByteArrayToFile(new File("C:\\temp\\CC5_4P_PAULISTA.pdf"), decode);
+        FileUtils.writeByteArrayToFile(new File("C:/temp/Livro Texto.pdf"), decode);
     }
 
     public static void main(String[] args) throws IOException {
@@ -102,7 +102,7 @@ public class Client {
                     switch (fileOption) {
                         case 1 -> {
                             System.out.println("Cole o caminho do arquivo: ");
-                            String path = sc.next();
+                            String path = sc.nextLine();
                             System.out.println("Conectado...");
                             System.out.println("Esperando cliente se conectar...");
                             c.sendFile(path);

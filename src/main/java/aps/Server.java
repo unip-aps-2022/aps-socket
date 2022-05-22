@@ -33,10 +33,11 @@ public class Server {
 
     public void receiveFile() throws IOException {
         byte[] decode = Base64.getDecoder().decode(in.readLine());
-        FileUtils.writeByteArrayToFile(new File("C:\\temp\\CC5_4P_PAULISTA.pdf"), decode);
+        FileUtils.writeByteArrayToFile(new File("C:/temp/Livro Texto.pdf"), decode);
     }
 
-    //        D:\temp\CC5_4P_PAULISTA.pdf
+    //        D:/temp/CC5_4P_PAULISTA.pdf
+    //        D:/temp/Livro Texto.pdf
     public void sendFile(String path) throws IOException {
         String base64 = Base64.getEncoder().encodeToString(Files.readAllBytes(Path.of(path)));
         out.println(base64);
@@ -100,7 +101,7 @@ public class Server {
                         switch (fileOption) {
                             case 1 -> {
                                 System.out.println("Cole o caminho do arquivo: ");
-                                String path = sc.next();
+                                String path = sc.nextLine();
                                 sv.sendFile(path);
                                 stop = true;
                             }
